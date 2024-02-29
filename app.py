@@ -114,6 +114,22 @@ def delete(post_id):
         url_for("home")
     )  # tell the web browser to make a request for the / route (the home function)
 
+@app.route("")
+def create_receipt():
+    """ 
+    Route to create and edit a new receipt 
+    """
+
+@app.route('/add-item', methods=['POST'])
+def add_item():
+    # Logic to add item goes here
+    """
+    Route to add items 
+    """
+    print("Item Added")
+    return redirect(url_for('create_receipt'))
+
+
 
 # route to handle any errors
 @app.errorhandler(Exception)
