@@ -42,29 +42,10 @@ def home():
     """
     Route for the home page
     """
-    docs = db.messages.find({}).sort(
+    docs = db.receipts.find({}).sort(
         "created_at", -1
     )  # sort in descending order of created_at timestamp
     return render_template("index.html", docs=docs)  # render the hone template
-
-
-# route to accept form submission and create a new post
-@app.route("/create", methods=["POST"])
-def create_post():
-    """
-    Route for POST requests to the create page.
-    Accepts the form submission data for a new document and saves the document to the database.
-    """
-    name = request.form["fname"]
-    message = request.form["fmessage"]
-
-    # create a new document with the data the user entered
-    doc = {"name": name, "message": message, "created_at": datetime.datetime.utcnow()}
-    db.messages.insert_one(doc)  # insert a new document
-
-    return redirect(
-        url_for("home")
-    )  # tell the browser to make a request for the / route (the home function)
 
 
 # route to view the edit form for an existing post
@@ -114,20 +95,78 @@ def delete(post_id):
         url_for("home")
     )  # tell the web browser to make a request for the / route (the home function)
 
+
+@app.route
+def receipt():
+
+    return render_template(receipt.html)
+
 @app.route("")
 def create_receipt():
     """ 
     Route to create and edit a new receipt 
     """
+    name =request.form["fname"]
+
+    doc = {"id": ObjectId(), "name" :name, "tip" :tip, "subtotal" : subtotal, "tax" : tax, "total" : total}
+    db.receipts.innsert_one(doc)
+
+    return(redirect(url_for("receipt")))
+
+
 
 @app.route('/add-item', methods=['POST'])
 def add_item():
-    # Logic to add item goes here
     """
     Route to add items 
     """
-    print("Item Added")
-    return redirect(url_for('create_receipt'))
+    name = request.form["fname"]
+    price = request.form["fprice"]
+
+    # create a new document with the data the user entered
+    doc = {"name": name, "price": price}
+    db.receipts.items.insert_one(doc)  # insert a new document
+
+
+    return redirect(url_for('receipt'))
+
+@app.route()
+def spin_wheel():
+
+
+@app.route()
+def setup():
+    """
+    
+    """
+
+@app.route()
+def settings():
+
+
+@app.route()
+def edit_settings():
+
+
+
+@app.route()
+def contacts():
+
+
+@app.route()
+def add_contacts():
+
+
+@app.route()
+def edit_contacts():
+
+
+@app.route()
+def delete_contacts():
+
+
+@app.route()
+def history():
 
 
 
