@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CheckMate</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Checkmate</h1>
+    </header>
+    <main>
+        <form action="{{ url_for('register') }}" method="post">
+            <div class="input-group">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="input-group">
+                <label>Email:</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label>Phone Number:</label>
+                <input type="text" name="phone" required>
+            </div>
+            <div class="input-group">
+                <label>Venmo Account:</label>
+                <input type="text" name="venmo" required>
+            </div>
+            <div class="input-group">
+                <label>Password:</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+            <button type="button" onclick="window.location.href='/';">Cancel</button>
+        </form>
+    </main>
+        <footer>
+            <p>
+              &copy; 2024. Shared under the GPL3 license. Source code available at
+              <a
+                href="https://github.com/software-students-spring2024/2-web-app-exercise-bswe/"
+                >available on Github</a
+              >.
+            </p>
+          </footer>
+        </div>
+</body>
+</html>

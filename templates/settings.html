@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<script>
+function editField(field) {
+    const display = document.getElementById(field + 'Display');
+    const edit = document.getElementById(field + 'Input');
+    display.style.display = 'none';
+    edit.style.display = 'inline';
+}
+
+function cancelEdit(field) {
+    const display = document.getElementById(field + 'Display');
+    const edit = document.getElementById(field + 'Input');
+    edit.value = display.innerText;
+    display.style.display = 'inline';
+    edit.style.display = 'none';
+}
+</script>
+
+<h2>Settings Page</h2>
+<form method="POST" action="{{ url_for('settings') }}">
+    <div class="input-group">
+        <label>Username:</label>
+        <span id="usernameDisplay" style="{{ 'display:none;' if editing_field == 'username' }}">{{ user['username'] }}</span>
+        <input type="text" name="username" id="usernameInput" value="{{ user['username'] }}" style="{{ 'display:inline;' if editing_field == 'username' else 'display:none;' }}">
+        {% if editing_field != 'username' %}
+            <a href="{{ url_for('settings', edit='username') }}">Edit</a>
+        {% else %}
+            <button type="submit" name="save" value="username">Save</button>
+            <a href="{{ url_for('settings') }}">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+<form method="POST" action="{{ url_for('settings') }}">
+    <div class="input-group">
+        <label>Email:</label>
+        <span id="emailDisplay" style="{{ 'display:none;' if editing_field == 'email' }}">{{ user['email'] }}</span>
+        <input type="text" name="email" id="emailInput" value="{{ user['email'] }}" style="{{ 'display:inline;' if editing_field == 'email' else 'display:none;' }}">
+        {% if editing_field != 'email' %}
+            <a href="{{ url_for('settings', edit='email') }}">Edit</a>
+        {% else %}
+            <button type="submit" name="save" value="email">Save</button>
+            <a href="{{ url_for('settings') }}">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+<form method="POST" action="{{ url_for('settings') }}">
+    <div class="input-group">
+        <label>Phone Number:</label>
+        <span id="phoneDisplay" style="{{ 'display:none;' if editing_field == 'phone' }}">{{ user['phone'] }}</span>
+        <input type="text" name="phone" id="phoneInput" value="{{ user['phone'] }}" style="{{ 'display:inline;' if editing_field == 'phone' else 'display:none;' }}">
+        {% if editing_field != 'phone' %}
+            <a href="{{ url_for('settings', edit='phone') }}">Edit</a>
+        {% else %}
+            <button type="submit" name="save" value="phone">Save</button>
+            <a href="{{ url_for('settings') }}">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+<form method="POST" action="{{ url_for('settings') }}">
+    <div class="input-group">
+        <label>Venmo:</label>
+        <span id="venmoDisplay" style="{{ 'display:none;' if editing_field == 'venmo' }}">{{ user['venmo'] }}</span>
+        <input type="text" name="venmo" id="venmoInput" value="{{ user['venmo'] }}" style="{{ 'display:inline;' if editing_field == 'venmo' else 'display:none;' }}">
+        {% if editing_field != 'venmo' %}
+            <a href="{{ url_for('settings', edit='venmo') }}">Edit</a>
+        {% else %}
+            <button type="submit" name="save" value="venmo">Save</button>
+            <a href="{{ url_for('settings') }}">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+<form method="POST" action="{{ url_for('settings') }}">
+    <div class="input-group">
+        <label>Password:</label>
+        <span id="passwordDisplay" style="{{ 'display:none;' if editing_field == 'password' }}">********</span>
+        <input type="password" name="password" id="passwordInput" style="{{ 'display:inline;' if editing_field == 'password' else 'display:none;' }}">
+        {% if editing_field != 'password' %}
+            <a href="{{ url_for('settings', edit='password') }}">Edit</a>
+        {% else %}
+            <button type="submit" name="save" value="password">Save</button>
+            <a href="{{ url_for('settings') }}">Cancel</a>
+        {% endif %}
+    </div>
+</form>
+<form method="POST" action="{{ url_for('logout') }}">
+    <button type="submit">Logout</button>
+</form>
+{% endblock %}

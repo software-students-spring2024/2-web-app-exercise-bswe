@@ -2,7 +2,8 @@
 
 import os
 import datetime
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # from markupsafe import escape
 import pymongo
@@ -15,7 +16,7 @@ load_dotenv()  # take environment variables from .env.
 
 # instantiate the app
 app = Flask(__name__)
-
+app.secret_key = 'a_unique_and_secret_key'
 # # turn on debugging if in development mode
 # if os.getenv("FLASK_ENV", "development") == "development":
 #     # turn on debugging, if in development
@@ -35,140 +36,111 @@ except Exception as e:
     print(" * MongoDB connection error:", e)  # debug
 
 # set up the routes
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = db.users.find_one({"username": username})
+        if user and check_password_hash(user['password'], password):
+            session['user_id'] = str(user['_id'])
+            return redirect(url_for('home'))
+        else:
+            pass
+    return render_template('login.html')
 
 
-@app.route("/")
-def home():
-    """
-    Route for the home page
-    """
-    docs = db.receipts.find({}).sort(
-        "created_at", -1
-    )  # sort in descending order of created_at timestamp
-    return render_template("index.html", docs=docs)  # render the hone template
+@app.route("/authenticate", methods=["POST"])
+def authenticate():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    user = db.users.find_one({"username": username})
 
+    if user and check_password_hash(user["password"], password):
+        return redirect(url_for("home"))
+    else:
+        return "Invalid login"
 
-# route to view the edit form for an existing post
-@app.route("/edit/<post_id>")
-def edit(post_id):
-    """
-    Route for GET requests to the edit page.
-    Displays a form users can fill out to edit an existing record.
-    """
-    doc = db.messages.find_one({"_id": ObjectId(post_id)})
-    return render_template("edit.html", doc=doc)  # render the edit template
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
 
+@app.route("/register", methods=["POST"])
+def register():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+    venmo = request.form.get("venmo")
 
-# route to accept the form submission to delete an existing post
-@app.route("/edit/<post_id>", methods=["POST"])
-def edit_post(post_id):
-    """
-    Route for POST requests to the edit page.
-    Accepts the form submission data for the specified document and updates the document in the database.
-    """
-    name = request.form["fname"]
-    message = request.form["fmessage"]
-
-    doc = {
-        # "_id": ObjectId(post_id),
-        "name": name,
-        "message": message,
-        "created_at": datetime.datetime.utcnow(),
-    }
-
-    db.messages.update_one({"_id": ObjectId(post_id)}, {"$set": doc})  # match criteria
-
-    return redirect(
-        url_for("home")
-    )  # tell the browser to make a request for the / route (the home function)
-
-
-# route to delete a specific post
-@app.route("/delete/<post_id>")
-def delete(post_id):
-    """
-    Route for GET requests to the delete page.
-    Deletes the specified record from the database, and then redirects the browser to the home page.
-    """
-    db.messages.delete_one({"_id": ObjectId(post_id)})
-    return redirect(
-        url_for("home")
-    )  # tell the web browser to make a request for the / route (the home function)
-
-
-@app.route
-def receipt():
-
-    return render_template(receipt.html)
-
-@app.route("")
-def create_receipt():
-    """ 
-    Route to create and edit a new receipt 
-    """
-    name =request.form["fname"]
-
-    doc = {"id": ObjectId(), "name" :name, "tip" :tip, "subtotal" : subtotal, "tax" : tax, "total" : total}
-    db.receipts.innsert_one(doc)
-
-    return(redirect(url_for("receipt")))
-
-
-
-@app.route('/add-item', methods=['POST'])
-def add_item():
-    """
-    Route to add items 
-    """
-    name = request.form["fname"]
-    price = request.form["fprice"]
-
-    # create a new document with the data the user entered
-    doc = {"name": name, "price": price}
-    db.receipts.items.insert_one(doc)  # insert a new document
-
-
-    return redirect(url_for('receipt'))
-
-@app.route()
-def spin_wheel():
-
-
-@app.route()
-def setup():
-    """
+    user_exists = db.users.find_one({"username": username})
     
-    """
+    if user_exists:
+        return "User already exists"
 
-@app.route()
+    hashed_password = generate_password_hash(password)
+
+    result = db.users.insert_one({
+        "username": username,
+        "password": hashed_password,
+        "email": email,
+        "phone": phone,
+        "venmo": venmo
+    })
+    
+    # Check if the user was successfully inserted
+    if result.inserted_id:
+        session['user_id'] = str(result.inserted_id)
+        return redirect(url_for("login"))
+    else:
+        return "Registration failed", 400
+    
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    user_id = session.get('user_id')
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
+    user = db.users.find_one({"_id": ObjectId(user_id)})
+    editing_field = request.args.get('edit')
 
-@app.route()
-def edit_settings():
+    if request.method == 'POST':
+        # Handling the save operation
+        if request.form.get('save'):
+            field_to_update = request.form['save']
+            new_value = request.form[field_to_update]
+            # Add conditional for password hashing
+            if field_to_update == 'password':
+                new_value = generate_password_hash(new_value)
+            db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {field_to_update: new_value}})
+            flash(f'{field_to_update.capitalize()} updated successfully.')
+            return redirect(url_for('settings'))
+        else:
+            pass
 
+    return render_template('settings.html', user=user, editing_field=editing_field)
 
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
-@app.route()
+@app.route("/home")
+def home():
+    return render_template("create_receipt.html")
+
+@app.route("/spin-wheel")
+def spin_wheel():
+    return "Spin Wheel Page"
+
+@app.route("/contacts")
 def contacts():
+    return render_template("contacts.html")
 
-
-@app.route()
-def add_contacts():
-
-
-@app.route()
-def edit_contacts():
-
-
-@app.route()
-def delete_contacts():
-
-
-@app.route()
+@app.route("/history")
 def history():
-
-
+    # Your logic to fetch any data if necessary
+    return render_template("history.html")
 
 # route to handle any errors
 @app.errorhandler(Exception)
