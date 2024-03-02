@@ -24,6 +24,28 @@ main {
   margin-bottom: 5px;
 }
 
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  margin-right: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.buttons button {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+button[type="submit"], button[type="button"] {
+  display: inline-block;
+}
+
 section.posts {
   display: flex;
   flex-direction: row;
