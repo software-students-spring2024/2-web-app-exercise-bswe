@@ -142,90 +142,59 @@ def spin_wheel():
 
 @app.route("/contacts", methods=['GET'])
 def contacts():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    # Retrieve all contacts from the 'contacts' collection
+    all_contacts = db.contacts.find()
+    contacts_list = list(all_contacts)
     
-    user_record = db.users.find_one({"_id": ObjectId(session['user_id'])})
-    contact_list = user_record.get("contacts", [])
-    return render_template("contacts.html", contactList=contact_list)
+    # Render the contacts page, passing in the contacts list
+    return render_template("contacts.html", contactList=contacts_list)
 
 @app.route("/create-contact", methods=['GET', 'POST'])
 def create_contact():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
     if request.method == 'POST':
+        # Extract contact information from the form
         new_contact = {
-            "uuid": str(uuid.uuid4()),
             "name": request.form.get("name"),
             "phone": request.form.get("phone"),
             "venmo": request.form.get("venmo"),
             "balance_owed": request.form.get("balance_owed")
         }
-        db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$push": {"contacts": new_contact}})
+
+        # Insert the new contact into the 'contacts' collection
+        db.contacts.insert_one(new_contact)
+        
+        # Redirect to the contacts list page
         return redirect(url_for('contacts'))
     
+    # Render the form for creating a new contact
     return render_template("create_contact.html")
 
-@app.route('/edit-contact/<contact_uuid>', methods=['GET', 'POST'])
-def edit_contact(contact_uuid):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+
+@app.route('/edit-contact/<contact_id>', methods=['GET'])
+def edit_contact(contact_id):
+    # Retrieve the specific contact by _id
+    contact = db.contacts.find_one({"_id": ObjectId(contact_id)})
     
-    if request.method == 'POST':
-        updated_contact = {
-            "contacts.$.name": request.form.get("name"),
-            "contacts.$.phone": request.form.get("phone"),
-            "contacts.$.venmo": request.form.get("venmo"),
-            "contacts.$.balance_owed": request.form.get("balance_owed")
-        }
-        db.users.update_one({"_id": ObjectId(session['user_id']), "contacts.uuid": contact_uuid}, {"$set": updated_contact})
-        return redirect(url_for('contacts'))
-    
-    user_record = db.users.find_one({"_id": ObjectId(session['user_id']), "contacts.uuid": contact_uuid}, {"contacts.$": 1})
-    contact = user_record["contacts"][0] if user_record and "contacts" in user_record else None
     if not contact:
-        flash("Contact not found.")
+        flash("Contact not found.", "error")
         return redirect(url_for('contacts'))
     
-    return render_template("edit_contact.html", contact=contact, contact_uuid=contact_uuid)
+    # Render the edit form, passing in the contact details
+    return render_template("edit_contact.html", contact=contact)
 
-@app.route('/update-contact/<contact_uuid>', methods=['POST'])
-def update_contact(contact_uuid):
-    # Ensure the user is logged in
-    if 'user_id' not in session:
-        flash('Please login to continue.', 'info')
-        return redirect(url_for('login'))
-
-    # Retrieve the current user's ID from session
-    user_id = session.get('user_id')
-    
+@app.route('/update-contact/<contact_id>', methods=['POST'])
+def update_contact(contact_id):
     # Extract the updated contact information from the form
-    updated_name = request.form.get('name')
-    updated_phone = request.form.get('phone')
-    updated_venmo = request.form.get('venmo')
-    updated_balance_owed = request.form.get('balance_owed')
-
-    # Build the update query to match the nested contact by uuid
-    update_query = {
-        "_id": ObjectId(user_id),
-        "contacts.uuid": contact_uuid
+    updated_contact = {
+        "name": request.form.get('name'),
+        "phone": request.form.get('phone'),
+        "venmo": request.form.get('venmo'),
+        "balance_owed": request.form.get('balance_owed')
     }
 
-    # Build the update operation to set the new values
-    update_operation = {
-        "$set": {
-            "contacts.$.name": updated_name,
-            "contacts.$.phone": updated_phone,
-            "contacts.$.venmo": updated_venmo,
-            "contacts.$.balance_owed": updated_balance_owed
-        }
-    }
-
-    # Perform the update operation
-    result = db.users.update_one(update_query, update_operation)
-
-    # Check if the update was successful
+    # Update the specific contact by _id
+    result = db.contacts.update_one({"_id": ObjectId(contact_id)}, {"$set": updated_contact})
+    
     if result.modified_count == 1:
         flash('Contact updated successfully!', 'success')
     else:
@@ -233,6 +202,7 @@ def update_contact(contact_uuid):
 
     # Redirect back to the contacts list
     return redirect(url_for('contacts'))
+
 
 @app.route("/history")
 def history():
