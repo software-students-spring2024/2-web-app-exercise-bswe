@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<body>
+    <h2>Contact List</h2>
+    <ul>
+        <form method="POST" action="{{ url_for('create_contact') }}">
+            <button type="submit">Add Contact</button>
+        </form>
+    </ul>
+    <ul>
+        {% if contactList is iterable %}
+            {% for contact in contactList %}
+                <li>
+                   <!--  uuid:   {{ contact.uuid }}<br>-->
+                  <strong>Name:</strong> {{ contact.name }}<br>
+                  <strong>Phone:</strong> {{ contact.phone }}<br>
+                  <strong>Venmo:</strong> {{ contact.venmo }}<br>
+                  <strong>Balance Owed:</strong> {{ contact.balance_owed }}
+
+                  <a href="/edit-contact/{{ contact.uuid }}">Edit</a>
+
+             </li>
+          {% endfor %}
+        {% endif %}
+</body>
+</html>
+{% endblock %}
