@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<body>
+    <h2>Create Contacts Page</h2>
+
+    <!-- Form for editing contact information -->
+    <form action="/update-contact/{{ contact['uuid'] }}" method="post">
+        <ul>
+            <li>
+                <label for="name"><strong>Name:</strong></label>
+                <input type="text" id="name" name="name" value="{{ contact['name'] }}">
+            </li>
+            <li>
+                <label for="phone"><strong>Phone:</strong></label>
+                <input type="text" id="phone" name="phone" value="{{ contact['phone'] }}">
+            </li>
+            <li>
+                <label for="venmo"><strong>Venmo:</strong></label>
+                <input type="text" id="venmo" name="venmo" value="{{ contact['venmo'] }}">
+            </li>
+            <li>
+                <label for="balance_owed"><strong>Balance Owed:</strong></label>
+                <input type="number" id="balance_owed" name="balance_owed" value="{{ contact['balance_owed'] }}">
+            </li>
+            <li>
+                <button type="submit">Create Contact</button>
+            </li>
+        </ul>
+    </form>
+</body>
+{% endblock %}
