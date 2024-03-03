@@ -4,6 +4,30 @@
 <body>
     <h2>Contacts Page</h2>
     <!-- Add your content here -->
+    <h1>Contact List</h1>
+    <ul>
+        <form method="POST" action="{{ url_for('create_contact') }}">
+            <button type="submit">Add Contact</button>
+        </form>
+    </ul>
+    <ul>
+        {% if contactList is iterable %}
+            {% for contact in contactList %}
+                <li>
+                  <strong>Name:</strong> {{ contact.name }}<br>
+                  <strong>Phone:</strong> {{ contact.phone }}<br>
+                  <strong>Venmo:</strong> {{ contact.venmo }}<br>
+                  <strong>Balance Owed:</strong> {{ contact.balance_owed }}
+
+                 <!-- Form to post data, potentially to an edit route -->
+                 <form action="/edit-contact/{{ contact['.uuid'] }}" method="post">
+                    <input type="hidden" name="contactuuid" value="{{ contact['.uuid'] }}">
+                    <button type="submit">Edit Contact</button>
+              </form>
+
+             </li>
+          {% endfor %}
+        {% endif %}
 </body>
 </html>
 {% endblock %}
