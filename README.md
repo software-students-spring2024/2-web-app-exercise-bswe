@@ -8,11 +8,11 @@ To simplify shared financial experiences by turning the often stressful task of 
 
 ## User stories
 
-See instructions. Delete this line and place a link to the user stories here.
+[Link To User Stories](https://github.com/software-students-spring2024/2-web-app-exercise-bswe/issues)
 
 ## Task boards
 
-See instructions. Delete this line and place a link to the task boards here.
+[Link To Taskboards](https://github.com/orgs/software-students-spring2024/projects/9)
 
 ## Setup Instructions (Based on resources from Amos Bloomberg)
 
