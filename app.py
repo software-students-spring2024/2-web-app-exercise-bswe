@@ -190,15 +190,24 @@ def create_contact():
 
 @app.route('/edit-contact/<contact_uuid>', methods=['GET'])
 def edit_contact(contact_uuid):
-    # Assuming MongoDB, convert contact_id to ObjectId. Skip or adjust for other databases.
-    query = { "contacts.uuid": contact_uuid }
-    contact_record = db.users.find(query) 
-    if not contact_record:
-        flash('Contact not found, create new', 'error')
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('You need to login first.', 'error')
+        return redirect(url_for('login'))
+    
+    user_record = db.users.find_one({"_id": ObjectId(user_id)})
+    if not user_record or "contacts" not in user_record:
+        flash('No contacts found.', 'error')
         return redirect(url_for('contacts'))
     
-    # Render the edit form template with the contact data
-    logger.info(contact_record)
+    # Find the specific contact by uuid
+    contact_record = next((item for item in user_record["contacts"] if item["uuid"] == contact_uuid), None)
+    
+    if not contact_record:
+        flash('Contact not found.', 'error')
+        return redirect(url_for('contacts'))
+    
+    # Assuming contact_record is the dictionary you want to edit
     return render_template('edit_contact.html', contact=contact_record)
 
 @app.route('/update-contact/<contact_uuid>', methods=['POST'])
