@@ -245,7 +245,7 @@ def history():
     if keyword:
         query = {"name": {"$regex": keyword, "$options": "i"}}
     
-    items = db.find(query)
+    items = db.receipts.find(query)
     items_list = list(items)
 
     return jsonify([item for item in items_list])
@@ -256,7 +256,7 @@ def current_receipt(receipt_id):
     receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
     if not receipt:
         return "Receipt not found", 404
-    return render_template('current_receipt.html', items=receipt.get('items', []), receipt_id=receipt_id)
+    return render_template('receipt_details', items=receipt.get('items', []), receipt_id=receipt_id)
 
 #route for adding items to current receipt
 @app.route('/add_item/<receipt_id>', methods = ['POST'])
@@ -279,7 +279,7 @@ def add_item(receipt_id):
     }
 
     db.receipts.update_one({'_id': receipt_id}, {'$push': {'items': item_entry}})
-    return redirect(url_for("current_receipt"))
+    return redirect(url_for("receipt_details"))
     
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
@@ -314,23 +314,34 @@ def new_receipt():
 
 @app.route('/calculate_bill/<receipt_id>')
 def calculate_bill(receipt_id):
-        receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
-        num_of_people = receipt['num_of_people']
-        items = receipt['items']
+    receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
+    if not receipt:
+        return "Receipt not found", 404
 
-        appetizer_total = sum(item['price'] for item in items if item['is_appetizer'])
-        appetizer_split = appetizer_total / num_of_people if num_of_people else 0
+    num_of_people = receipt['num_of_people']
+    items = receipt['items']
 
-        diner_totals = {diner_id: appetizer_split for diner_id in range(1, num_of_people + 1)}
-        for item in items:
-            if not item['is_appetizer']:
-                diner_id = item.get('person_paying')
-                if diner_id:
-                    diner_totals[diner_id] += item['price']
-                    db.user.contacts.update_one({'_id': diner_id}, {'$inc': {'balance_owed': diner_totals[diner_id]}})
+    # Calculate total cost of appetizers and split equally
+    appetizer_total = sum(item['price'] for item in items if item['is_appetizer'])
+    appetizer_split = appetizer_total / num_of_people if num_of_people else 0
 
-        return jsonify(diner_totals)
+    # Initialize a dictionary to hold each diner's total, starting with the appetizer split
+    diner_totals = {}
 
+    # Calculate each diner's total for non-appetizer items
+    for item in items:
+        if not item['is_appetizer']:
+            diner_id = item.get('person_paying')  # Assuming this is an ObjectId
+            if diner_id:
+                if diner_id not in diner_totals:
+                    diner_totals[diner_id] = appetizer_split
+                diner_totals[diner_id] += item['price']
+    
+    # Update each diner's balance owed in the users collection
+    for diner_id, total in diner_totals.items():
+        db.users.update_one({'_id': diner_id}, {'$inc': {'balance_owed': total}})
+
+    return jsonify({str(diner_id): total for diner_id, total in diner_totals.items()})
 
 
 
