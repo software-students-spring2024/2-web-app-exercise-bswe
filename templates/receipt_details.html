@@ -8,15 +8,27 @@
     <h2>Receipt Items</h2>
     <ul>
         {% for item in items %}
-            <li>{{ item }}</li>
+            <li>{{ item.name }}: ${{ item.price }}</li>
         {% endfor %}
     </ul>
     
     <h3>Add a New Item</h3>
-    <form action="/add_item/{{ receipt_id }}" method="post">
-        <label for="new_item">Item Name:</label>
-        <input type="text" id="new_item" name="new_item" required>
-        <button type="submit">Add Item</button>
+    
+    <form action="{{ url_for('add_item', receipt_id=receipt_id) }}" method="post">
+    <label for="new_item">Item Name:</label>
+    <input type="text" id="new_item" name="new_item" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="0.01" required>
+
+    <label for="is_appetizer">Is Appetizer:</label>
+    <input type="checkbox" id="is_appetizer" name="is_appetizer">
+
+    <label for="diner_name">Diner Name:</label>
+    <input type="text" id="diner_name" name="diner_name">
+
+    <button type="submit">Add Item</button>
     </form>
+
 </body>
 </html>

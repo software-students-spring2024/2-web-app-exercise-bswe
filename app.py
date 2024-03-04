@@ -254,35 +254,32 @@ def history():
     return render_template("search_history.html", items=items_list)
 
 
-@app.route('/receipt/<receipt_id>')
+@app.route('/receipt_details/<receipt_id>')
 def receipt_details(receipt_id):
     receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
     if not receipt:
         return "Receipt not found", 404
-    return render_template('receipt_details', items=receipt.get('items', []), receipt_id=receipt_id)
+    return render_template('receipt_details.html', items=receipt.get('items', []), receipt_id=receipt_id)
 
 #route for adding items to current receipt
-@app.route('/add_item/<receipt_id>', methods = ['POST'])
+@app.route('/add_item/<receipt_id>', methods=['POST'])
 def add_item(receipt_id): 
     item_name = request.form.get('item_name')
-    price = request.form.get('price', type = float)
-    is_appetizer = 'is_appetizer' in request.form
-    if not is_appetizer:
-        diner_name = request.form.get('diner_name')
-        person_paying = db.users.find_one({"name": diner_name})
-    else:
-        person_paying = None
+    price = request.form.get('price', type=float)
+    is_appetizer = request.form.get('is_appetizer') == 'on'  # Assuming a checkbox named 'is_appetizer'
+    diner_name = request.form.get('diner_name') if not is_appetizer else None
+
+    person_paying = db.users.find_one({"name": diner_name})['_id'] if diner_name else None
 
     item_entry = {
         "item_name": item_name,
-        "price": float(price), 
+        "price": price,
         "is_appetizer": is_appetizer,
         "person_paying": person_paying
-        
     }
 
-    db.receipts.update_one({'_id': receipt_id}, {'$push': {'items': item_entry}})
-    return redirect(url_for("receipt_details"))
+    db.receipts.update_one({'_id': ObjectId(receipt_id)}, {'$push': {'items': item_entry}})
+    return redirect(url_for("receipt_details", receipt_id=receipt_id))
     
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
@@ -311,7 +308,7 @@ def new_receipt():
     # Insert the new receipt into the MongoDB collection
     result = db.receipts.insert_one(receipt_data)
     
-    return redirect(url_for('receipt', receipt_id=str(result.inserted_id)))
+    return redirect(url_for('receipt_details', receipt_id=str(result.inserted_id)))
 
 
 
