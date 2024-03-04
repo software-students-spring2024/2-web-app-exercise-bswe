@@ -243,7 +243,6 @@ def history():
     
     query = {}
     if keyword:
-        # Assuming you want to perform a case-insensitive search in the 'name' field
         query = {"name": {"$regex": keyword, "$options": "i"}}
     
     items = db.find(query)
@@ -264,13 +263,21 @@ def current_receipt(receipt_id):
 def add_item(receipt_id): 
     item_name = request.form.get('item_name', type= object)
     price = request.form.get('price', type = float)
+    is_appetizer = request.form.get('Is this item an appetizer?', type = bool)
+    if not is_appetizer:
+        diner_name = request.form.get('who is paying for this?', type = object)
+    person_paying = db.users.contacts.find_one({"name" : contacts['name']})
+
     item_entry = {
         "item_name": item_name,
         "price": float(price), 
+        "is_appetizer": is_appetizer,
+        "person_paying": person_paying
+        
     }
 
     db.receipts.update_one({'_id': receipt_id}, {'$push': {'ingredients': item_entry}})
-    return redirect(url_for:('current_receipt'))
+    return redirect(url_for("current_receipt"))
     
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
@@ -301,6 +308,26 @@ def new_receipt():
     
     # Return a success message with the ID of the new receipt document
     return f"Receipt added successfully with ID: {result.inserted_id}", 201
+
+
+@app.route('/calculate_bill/<receipt_id>')
+def calculate_bill(receipt_id):
+        receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
+        num_of_people = receipt['num_of_people']
+        items = receipt['items']
+
+        appetizer_total = sum(item['price'] for item in items if item['is_appetizer'])
+        appetizer_split = appetizer_total / num_of_people if num_of_people else 0
+
+        diner_totals = {diner_id: appetizer_split for diner_id in range(1, num_of_people + 1)}
+        for item in items:
+            if not item['is_appetizer']:
+                diner_id = item.get('person_paying')
+                if diner_id:
+                    diner_totals[diner_id] += item['price']
+                    db.user.contacts.update_one({'_id': diner_id}, {'$inc': {'balance_owed': diner_totals[diner_id]}})
+
+        return jsonify(diner_totals)
 
 
 
