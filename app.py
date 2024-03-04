@@ -243,7 +243,6 @@ def history():
     
     query = {}
     if keyword:
-        # Assuming you want to perform a case-insensitive search in the 'name' field
         query = {"name": {"$regex": keyword, "$options": "i"}}
     
     items = db.find(query)
