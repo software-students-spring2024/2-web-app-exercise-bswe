@@ -134,9 +134,7 @@ def logout():
 
 @app.route("/home")
 def home():
-    return redirect(
-        url_for("new_receipt"))@app.route("/home")
-
+    return render_template("new_receipt.html")
 
 @app.route("/spin-wheel")
 def spin_wheel():
