@@ -283,8 +283,8 @@ def add_item(receipt_id):
 def new_receipt():
     # Extracting data from the form
     num_of_people = request.form.get('num_of_people', type=int)
-    tax = request.form.get('tax%', type=float)
-    tip = request.form.get('tip%', type=float)
+    tax = request.form.get('tax', type=float)
+    tip = request.form.get('tip', type=float)
     subtotal = request.form.get('subtotal', type=float)
     
     # Validate received data
