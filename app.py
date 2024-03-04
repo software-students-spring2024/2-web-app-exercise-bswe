@@ -234,10 +234,22 @@ def update_contact(contact_uuid):
     # Redirect back to the contacts list
     return redirect(url_for('contacts'))
 
+
+
+#route to show all the receipts history with functionality to search a keyword
 @app.route("/history")
 def history():
-    # Your logic to fetch any data if necessary
-    return render_template("history.html")
+    keyword = request.args.get('search', None)
+    
+    query = {}
+    if keyword:
+        # Assuming you want to perform a case-insensitive search in the 'name' field
+        query = {"name": {"$regex": keyword, "$options": "i"}}
+    
+    items = db.find(query)
+    items_list = list(items)
+
+    return jsonify([item for item in items_list])
 
 
 @app.route('/receipt/<receipt_id>')
