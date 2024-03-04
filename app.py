@@ -3,7 +3,7 @@
 import os
 import datetime
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # from markupsafe import escape
@@ -134,7 +134,7 @@ def logout():
 
 @app.route("/home")
 def home():
-    return render_template("create_receipt.html")
+    return render_template("new_receipt.html")
 
 @app.route("/spin-wheel")
 def spin_wheel():
@@ -234,10 +234,76 @@ def update_contact(contact_uuid):
     # Redirect back to the contacts list
     return redirect(url_for('contacts'))
 
+
+
+#route to show all the receipts history with functionality to search a keyword
 @app.route("/history")
 def history():
-    # Your logic to fetch any data if necessary
-    return render_template("history.html")
+    keyword = request.args.get('search', None)
+    
+    query = {}
+    if keyword:
+        # Assuming you want to perform a case-insensitive search in the 'name' field
+        query = {"name": {"$regex": keyword, "$options": "i"}}
+    
+    items = db.find(query)
+    items_list = list(items)
+
+    return jsonify([item for item in items_list])
+
+
+@app.route('/receipt/<receipt_id>')
+def current_receipt(receipt_id):
+    receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
+    if not receipt:
+        return "Receipt not found", 404
+    return render_template('current_receipt.html', items=receipt.get('items', []), receipt_id=receipt_id)
+
+#route for adding items to current receipt
+@app.route('/add_item/<receipt_id>', methods = ['POST'])
+def add_item(receipt_id): 
+    item_name = request.form.get('item_name', type= object)
+    price = request.form.get('price', type = float)
+    item_entry = {
+        "item_name": item_name,
+        "price": float(price), 
+    }
+
+    db.receipts.update_one({'_id': receipt_id}, {'$push': {'ingredients': item_entry}})
+    return redirect(url_for:('current_receipt'))
+    
+@app.route('/new_receipt', methods=['POST'])
+def new_receipt():
+    # Extracting data from the form
+    num_of_people = request.form.get('num_of_people', type=int)
+    tax = request.form.get('tax%', type=float)
+    tip = request.form.get('tip%', type=float)
+    subtotal = request.form.get('subtotal', type=float)
+    
+    # Validate received data
+    if not all([num_of_people, tax, tip, subtotal]):
+        return "Missing or invalid fields in form data", 400
+
+    # Calculate total
+    total = 1+(tax+tip)/100 * subtotal
+
+    # Prepare the document
+    receipt_data = {
+        "num_of_people": num_of_people,
+        "total": total,
+        "tax": tax,
+        "tip": tip,
+        "subtotal": subtotal
+    }
+
+    # Insert the new receipt into the MongoDB collection
+    result = db.receipts.insert_one(receipt_data)
+    
+    # Return a success message with the ID of the new receipt document
+    return f"Receipt added successfully with ID: {result.inserted_id}", 201
+
+
+
 
 # route to handle any errors
 @app.errorhandler(Exception)
