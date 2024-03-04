@@ -263,13 +263,21 @@ def current_receipt(receipt_id):
 def add_item(receipt_id): 
     item_name = request.form.get('item_name', type= object)
     price = request.form.get('price', type = float)
+    appetizer = request.form.get('Is this item an appetizer?', type = bool)
+    if not appetizer:
+        diner_name = request.form.get('who is paying for this?', type = object)
+    person_paying = db.users.contacts.find_one({"name" : contacts['name']})
+
     item_entry = {
         "item_name": item_name,
         "price": float(price), 
+        "appetizer": appetizer,
+        "person_paying": person_paying
+        
     }
 
     db.receipts.update_one({'_id': receipt_id}, {'$push': {'ingredients': item_entry}})
-    return redirect(url_for:('current_receipt'))
+    return redirect(url_for("current_receipt"))
     
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
