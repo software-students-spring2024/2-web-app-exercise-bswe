@@ -1,13 +1,25 @@
-{% extends 'base.html' %}
-
-{% block container %}
-<h2>Add Item</h2>
-<p>Add a new item to the MongoDB database collection.</p>
-<form method="POST" action="{{ url_for('add_item') }}">
-    <input type="text" id="fname" name="fname" placeholder="Item name"/>
-    <br />
-    <input type="number" step="0.01" id="fprice" name="fprice" placeholder="Price"/>
-    <br />
-    <input type="submit" value="Add" />
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Item to Receipt</title>
+</head>
+<body>
+    <h2>Add Item to Receipt</h2>
+    <form action="/add_item/RECEIPT_ID" method="post">
+        <label for="item_name">Item Name:</label><br>
+        <input type="text" id="item_name" name="item_name" required><br>
+        
+        <label for="price">Price:</label><br>
+        <input type="number" id="price" name="price" step="0.01" required><br>
+        
+        <label for="is_appetizer">Is this an appetizer? (check for yes):</label><br>
+        <input type="checkbox" id="is_appetizer" name="is_appetizer" value="true"><br>
+        
+        <label for="diner_name">Who is paying for this? (leave blank if an appetizer):</label><br>
+        <input type="text" id="diner_name" name="diner_name"><br>
+        
+        <button type="submit">Add Item</button>
+    </form>
+</body>
+</html>
