@@ -13,7 +13,7 @@
     </ul>
     
     <h3>Add a New Item</h3>
-    <form action="/add_item_to_receipt/{{ receipt_id }}" method="post">
+    <form action="/add_item/{{ receipt_id }}" method="post">
         <label for="new_item">Item Name:</label>
         <input type="text" id="new_item" name="new_item" required>
         <button type="submit">Add Item</button>

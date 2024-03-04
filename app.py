@@ -134,7 +134,8 @@ def logout():
 
 @app.route("/home")
 def home():
-    return render_template("new_receipt.html")
+    return redirect(
+        url_for("home"))
 
 @app.route("/spin-wheel")
 def spin_wheel():
@@ -234,6 +235,9 @@ def update_contact(contact_uuid):
     # Redirect back to the contacts list
     return redirect(url_for('contacts'))
 
+@app.route("/search_history")
+def search_history():
+    return render_template("search_history.html")
 
 
 #route to show all the receipts history with functionality to search a keyword
@@ -248,7 +252,7 @@ def history():
     items = db.receipts.find(query)
     items_list = list(items)
 
-    return jsonify([item for item in items_list])
+    return render_template("search_history.html", items=items_list)
 
 
 @app.route('/receipt/<receipt_id>')
@@ -308,8 +312,8 @@ def new_receipt():
     # Insert the new receipt into the MongoDB collection
     result = db.receipts.insert_one(receipt_data)
     
-    # Return a success message with the ID of the new receipt document
-    return f"Receipt added successfully with ID: {result.inserted_id}", 201
+    return redirect(url_for('receipt', receipt_id=str(result.inserted_id)))
+
 
 
 @app.route('/calculate_bill/<receipt_id>')
