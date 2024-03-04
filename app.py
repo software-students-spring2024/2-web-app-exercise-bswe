@@ -252,7 +252,7 @@ def history():
 
 
 @app.route('/receipt/<receipt_id>')
-def current_receipt(receipt_id):
+def receipt_details(receipt_id):
     receipt = db.receipts.find_one({"_id": ObjectId(receipt_id)})
     if not receipt:
         return "Receipt not found", 404
