@@ -23,28 +23,3 @@
     </form>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Submit Receipt</title>
-</head>
-<body>
-    <h2>Submit New Receipt</h2>
-    <form action="/new_receipt" method="post">
-        <label for="num_of_people">Number of People:</label><br>
-        <input type="number" id="num_of_people" name="num_of_people" required><br>
-        
-        <label for="tax">Tax:</label><br>
-        <input type="number" id="tax" name="tax" step="0.01" required><br>
-        
-        <label for="tip">Tip:</label><br>
-        <input type="number" id="tip" name="tip" step="0.01" required><br>
-        
-        <label for="subtotal">Subtotal:</label><br>
-        <input type="number" id="subtotal" name="subtotal" step="0.01" required><br>
-        
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
