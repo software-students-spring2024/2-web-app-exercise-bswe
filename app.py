@@ -64,6 +64,7 @@ def authenticate():
     user = db.users.find_one({"username": username})
 
     if user and check_password_hash(user["password"], password):
+        session['user_id'] = str(user['_id'])
         return redirect(url_for("home"))
     else:
         return "Invalid login"
@@ -105,25 +106,26 @@ def register():
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     user_id = session.get('user_id')
-    if 'user_id' not in session:
+
+    if user_id:
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+        editing_field = request.args.get('edit')
+
+        if request.method == 'POST':
+            # Handling the save operation
+            if request.form.get('save'):
+                field_to_update = request.form['save']
+                new_value = request.form[field_to_update]
+                # Add conditional for password hashing
+                if field_to_update == 'password':
+                    new_value = generate_password_hash(new_value)
+                db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {field_to_update: new_value}})
+                flash(f'{field_to_update.capitalize()} updated successfully.')
+                return redirect(url_for('settings'))
+            else:
+                pass
+    else:
         return redirect(url_for('login'))
-
-    user = db.users.find_one({"_id": ObjectId(user_id)})
-    editing_field = request.args.get('edit')
-
-    if request.method == 'POST':
-        # Handling the save operation
-        if request.form.get('save'):
-            field_to_update = request.form['save']
-            new_value = request.form[field_to_update]
-            # Add conditional for password hashing
-            if field_to_update == 'password':
-                new_value = generate_password_hash(new_value)
-            db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {field_to_update: new_value}})
-            flash(f'{field_to_update.capitalize()} updated successfully.')
-            return redirect(url_for('settings'))
-        else:
-            pass
 
     return render_template('settings.html', user=user, editing_field=editing_field)
 
