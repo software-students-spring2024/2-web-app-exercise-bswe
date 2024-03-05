@@ -1,0 +1,87 @@
+/* General resets for modern look */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  border: none; /* Removing the solid border for a softer look */
+  max-width: 600px; /* Narrower for focus */
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+header h1 {
+  font-size: 2em; /* Larger title */
+  color: #333; /* Darker text for contrast */
+}
+
+header, footer, main {
+  padding: 1rem;
+}
+
+/* Flex adjustments for smaller headers */
+header {
+  display: flex;
+  flex-direction: column; /* Stack title and nav */
+  gap: 10px; /* Reduced space */
+  align-items: center; /* Center alignment */
+}
+
+.input-group, .buttons {
+  width: 100%;
+  margin-bottom: 20px; /* More space */
+}
+
+.input-group label {
+  display: block; /* Label above input */
+  margin-bottom: .5rem; /* Space between label and input */
+}
+
+input[type="text"],
+input[type="password"] {
+  width: calc(100% - 22px); /* Full width inputs */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px; /* Rounded corners */
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between; /* Space between buttons */
+}
+
+.buttons button {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #0056b3; /* Darker on hover */
+}
+
+button[type="submit"], button[type="button"] {
+  width: auto; /* Auto width based on content */
+}
+
+footer {
+  text-align: center; /* Center footer content */
+  font-size: 0.8rem; /* Smaller font size */
+  margin-top: 20px; /* Space from the form */
+}
