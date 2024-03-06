@@ -286,10 +286,11 @@ def add_item(receipt_id):
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
     # Extracting data from the form
+    receipt_name = request.form.get('subtotal', type=str)
     num_of_people = request.form.get('num_of_people', type=int)
+    subtotal = request.form.get('subtotal', type=float)
     tax = request.form.get('tax', type=float)
     tip = request.form.get('tip', type=float)
-    subtotal = request.form.get('subtotal', type=float)
     
     # Validate received data
     if not all([num_of_people, tax, tip, subtotal]):
@@ -300,6 +301,7 @@ def new_receipt():
 
     # Prepare the document
     receipt_data = {
+        "receipt_name": receipt_name,
         "num_of_people": num_of_people,
         "total": total,
         "tax": tax,

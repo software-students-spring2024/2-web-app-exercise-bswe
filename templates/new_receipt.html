@@ -10,6 +10,9 @@
 <body>
     <h2>Add New Receipt</h2>
     <form action="/new_receipt" method="post">
+        <label for="receipt_name">Receipt Name:</label><br>
+        <input type="str" id="receipt_name" name="receipt_name" required><br>
+
         <label for="num_of_people">Number of People:</label><br>
         <input type="number" id="num_of_people" name="num_of_people" required><br>
         
