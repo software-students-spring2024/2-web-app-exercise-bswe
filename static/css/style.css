@@ -1,4 +1,4 @@
-/* General Resets */
+
 *,
 *::before,
 *::after {
@@ -15,12 +15,12 @@ body {
 }
 
 a {
-    color: rgb(24,176,100); /* Updated green for links */
+    color: rgb(24,176,100);
     text-decoration: none;
 }
 
 a:hover {
-    color: #007bff; /* Lighter blue for hover for contrast */
+    color: #0056b3;
 }
 
 .container {
@@ -36,15 +36,25 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    background-color: rgb(24,176,100); /* Updated green background for the header */
-    padding: 10px; /* Added padding for better spacing */
-    border-radius: 5px; /* Rounded corners */
+    padding: 20px 0;
+    background-color: rgb(24,176,100);
+    color: #fff;
 }
 
 header h1 {
     margin: 0;
-    color: #fff; /* White text for contrast */
+    padding-left: 30px; 
+    color: #fff;
+}
+
+
+h2 {
+    font-size: 24px;
+    color: rgb(24, 176, 100); 
+    margin-bottom: 20px; 
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(24, 176, 100, 0.5); 
+    text-align: left; 
 }
 
 nav {
@@ -52,87 +62,99 @@ nav {
 }
 
 nav a {
-    margin-right: 15px;
-    padding: 5px 10px;
-    background-color: rgb(24,176,100); /* Consistent green for nav links */
-    color: #fff; /* White text for links */
-    border-radius: 3px; /* Rounded corners for links */
+    padding: 10px 15px;
+    margin: 0 10px;
+    background-color: rgba(24,176,100, 0.8);
+    color: #ffffff;
+    border-radius: 5px;
+    text-align: center;
 }
 
 nav a:hover {
-    background-color: rgba(24,176,100, 0.8); /* Slightly transparent green for hover */
+    background-color: rgba(24,176,100, 1);
+    color: #ffffff;
 }
 
 main {
-    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .input-group {
-    margin-bottom: 1em;
+    margin-bottom: 20px;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 0.5em;
+    margin-bottom: 8px;
 }
 
-.input-group input[type="text"],
-.input-group input[type="email"],
-.input-group input[type="number"],
-.input-group input[type="password"] {
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="search"] {
     width: 100%;
     padding: 10px;
+    margin: 8px 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus {
+    border-color: #4A90E2;
+    box-shadow: 0 0 8px rgba(74,144,226,0.5);
+}
+
+input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Button Styling for Consistency */
 button,
-input[type="submit"] {
-    background-color: rgb(24,176,100); /* Dark green for buttons */
-    color: #ffffff;
+input[type="submit"],
+.buttons button {
+    background-color: rgba(24,176,100, 0.8);
+    color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    transition: background-color 0.3s;
 }
 
 button:hover,
-input[type="submit"]:hover {
-    background-color: rgba(24,176,100, 0.8); /* Slightly transparent green on hover */
+input[type="submit"]:hover,
+.buttons button:hover {
+    background-color: rgba(24,176,100, 1);
 }
 
 footer {
     text-align: center;
+    padding: 20px;
     margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+    background-color: #ffffff; 
+    color: #333;
+    border-top: 1px solid #eee; 
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th,
-td {
-    padding: 8px;
-    border: 1px solid #ccc;
-    text-align: left;
-}
-
-th {
-    background-color: rgb(24,176,100); /* Updated green for table headers */
-    color: #fff; /* White text for contrast */
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-    header {
+    header, nav {
         flex-direction: column;
+        text-align: center;
     }
 
     nav a {
-        margin-bottom: 10px;
+        margin: 10px 0;
     }
 }
