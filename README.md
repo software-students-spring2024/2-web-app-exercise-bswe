@@ -16,20 +16,13 @@ To simplify shared financial experiences by turning the often stressful task of 
 
 ## Setup Instructions (Based on resources from Amos Bloomberg)
 
-### Build and launch the database
+3 steps to set up local hosting:
 
-If you have not already done so, start up a MongoDB database:
+1. docker build -t ebc5802/2-web-app-exercise-bswe .
 
-- run command, `docker run --name mongodb_dockerhub -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=secret -d mongo:latest`
+2. docker run --name mongodb_dockerhub -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=secret -d mongo:latest
 
-The back-end code will integrate with this database. However, it may be occasionally useful interact with the database directly from the command line:
-
-- connect to the database server from the command line: `docker exec -ti mongodb_dockerhub mongosh -u admin -p secret`
-- show the available databases: `show dbs`
-- select the database used by this app: `use example`
-- exit the database shell whenever you have had your fill: `exit`
-
-If you have trouble running Docker on your computer, use a database hosted on [MongoDB Atlas](https://www.mongodb.com/atlas) instead. Atlas is a "cloud" MongoDB database service with a free option. Create a database there, and make note of the connection string, username, password, etc.
+3. docker run -ti --rm -d -p 10000:5000 -e MONGO_DBNAME=bswe_db -e MONGO_URI="mongodb://admin:secret@host.docker.internal:27017" ebc5802/2-web-app-exercise-bswe
 
 ### Create a `.env` file
 
