@@ -1,0 +1,138 @@
+/* General Resets */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: rgb(24,176,100); /* Updated green for links */
+    text-decoration: none;
+}
+
+a:hover {
+    color: #007bff; /* Lighter blue for hover for contrast */
+}
+
+.container {
+    width: 85%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: rgb(24,176,100); /* Updated green background for the header */
+    padding: 10px; /* Added padding for better spacing */
+    border-radius: 5px; /* Rounded corners */
+}
+
+header h1 {
+    margin: 0;
+    color: #fff; /* White text for contrast */
+}
+
+nav {
+    display: flex;
+}
+
+nav a {
+    margin-right: 15px;
+    padding: 5px 10px;
+    background-color: rgb(24,176,100); /* Consistent green for nav links */
+    color: #fff; /* White text for links */
+    border-radius: 3px; /* Rounded corners for links */
+}
+
+nav a:hover {
+    background-color: rgba(24,176,100, 0.8); /* Slightly transparent green for hover */
+}
+
+main {
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 1em;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="number"],
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button,
+input[type="submit"] {
+    background-color: rgb(24,176,100); /* Dark green for buttons */
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background-color: rgba(24,176,100, 0.8); /* Slightly transparent green on hover */
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+th {
+    background-color: rgb(24,176,100); /* Updated green for table headers */
+    color: #fff; /* White text for contrast */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+    }
+
+    nav a {
+        margin-bottom: 10px;
+    }
+}
