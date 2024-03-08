@@ -28,5 +28,10 @@
             </li>
         </ul>
     </form>
+
+    <!-- Form for deleting contact information -->
+    <form action="/delete-contact/{{ contact['uuid'] }}" method="post" onsubmit="return confirm('Are you sure you want to delete this contact?');">
+        <button type="submit">Delete Contact</button>
+    </form>
 </body>
 {% endblock %}

@@ -14,6 +14,12 @@ To simplify shared financial experiences by turning the often stressful task of 
 
 [Link To Taskboards](https://github.com/orgs/software-students-spring2024/projects/9)
 
+## Project Overview
+
+The goal of Checkmate is to turn the experience of picking up the check from a chore to an easy win as the best friend in the friend group. The vision is to have a seamless process where Checkmate takes you from a photo of your receipt to an automated payment request feature in seconds. The app stores your payment information and your friends' contact information. When you get the check, you take a picture, the optical character recognition (OCR) algorithm scans the receipt, logs the relevant information, and creates a digital copy. The user corrects any errors, if any, and splits the bill/individual items between stored contacts. Optionally, there is an element of fun where friends can decide to gamble who pays the bill. Checkmate would then use stored contact information and payment details to notify and remind friends to pay you back.
+
+Ultimately we fell short of our vision due to underestimating our given scope. We were not able to reach all of our goals and complete all of our user stories. Notably, OCR and notifications were out of the scope of this project given time restraints and prior knowledge. However, we still learned a lot about flask and pymongo from building out our basic, working prototype. 
+
 ## Setup Instructions (Based on resources from Amos Bloomberg)
 
 3 steps to set up local hosting:
@@ -27,15 +33,6 @@ To simplify shared financial experiences by turning the often stressful task of 
 ### Create a `.env` file
 
 A file named `.env` is necessary to run the application. This file contains sensitive environment variables holding credentials such as the database connection string, username, password, etc. This file should be excluded from version control in the [`.gitignore`](.gitignore) file.
-
-An example file named `env.example` is given. Copy this into a file named `.env` and edit the values to match your database. If following the instructions and using Docker to run the database, the values should be:
-
-```
-MONGO_DBNAME=example
-MONGO_URI="mongodb://admin:secret@localhost:27017/example?authSource=admin&retryWrites=true&w=majority"
-```
-
-The other values can be left alone.
 
 ### Run the app
 

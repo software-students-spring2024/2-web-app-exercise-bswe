@@ -10,16 +10,26 @@
 <body>
     <h2>Add New Receipt</h2>
     <form action="/new_receipt" method="post">
+        <label for="receipt_name">Receipt Name:</label><br>
+        <input type="text" id="receipt_name" name="receipt_name" required><br>
+
         <label for="num_of_people">Number of People:</label><br>
         <input type="number" id="num_of_people" name="num_of_people" required><br>
         
-        <label for="tax">Tax:</label><br>
+        <label for="selected_contacts">Select Contacts:</label><br>
+        <select name="selected_contacts" id="selected_contacts" multiple required>
+            {% for contact in contacts %}
+            <option value="{{ contact._id }}">{{ contact.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="tax">Tax (%):</label><br>
         <input type="number" id="tax" name="tax" step="0.01" required><br>
         
-        <label for="tip">Tip:</label><br>
+        <label for="tip">Tip (%):</label><br>
         <input type="number" id="tip" name="tip" step="0.01" required><br>
         
-        <label for="subtotal">Subtotal:</label><br>
+        <label for="subtotal">Subtotal ($):</label><br>
         <input type="number" id="subtotal" name="subtotal" step="0.01" required><br>
         
         <input type="submit" value="Submit">
