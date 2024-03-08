@@ -236,6 +236,27 @@ def update_contact(contact_uuid):
     # Redirect back to the contacts list
     return redirect(url_for('contacts'))
 
+
+@app.route('/delete-contact/<contact_uuid>', methods=['POST'])
+def delete_contact(contact_uuid):
+    if 'user_id' not in session:
+        flash("Please login to continue.", "info")
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    # Attempt to pull (remove) the contact with the given UUID from the user's contacts array
+    result = db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$pull": {"contacts": {"uuid": contact_uuid}}}
+    )
+
+    if result.modified_count > 0:
+        flash("Contact deleted successfully.", "success")
+    else:
+        flash("Failed to delete contact.", "error")
+
+    return redirect(url_for('contacts'))
+
 @app.route("/search_history")
 def search_history():
     return render_template("search_history.html")
@@ -286,23 +307,34 @@ def add_item(receipt_id):
 @app.route('/new_receipt', methods=['POST'])
 def new_receipt():
     # Extracting data from the form
-    receipt_name = request.form.get('subtotal', type=str)
+    receipt_name = request.form.get('receipt_name', type=str)  # Ensure this matches your form
     num_of_people = request.form.get('num_of_people', type=int)
+    selected_contact_ids = request.form.getlist('selected_contacts')  # Assumes multi-select input for contacts
     subtotal = request.form.get('subtotal', type=float)
     tax = request.form.get('tax', type=float)
     tip = request.form.get('tip', type=float)
     
+    # Fetch the selected contacts based on their IDs
+    selected_contacts = db.users.find({"_id": {"$in": [ObjectId(id) for id in selected_contact_ids]}})
+
+    # Validate there are enough contacts
+    if selected_contacts.count() < num_of_people:
+        flash(f"Not enough contacts selected. You selected {selected_contacts.count()}, but specified splitting with {num_of_people} people.", 'error')
+        return redirect(url_for('new_receipt'))
+    
     # Validate received data
-    if not all([num_of_people, tax, tip, subtotal]):
-        return "Missing or invalid fields in form data", 400
+    if not all([receipt_name, num_of_people, tax, tip, subtotal]):
+        flash("Missing or invalid fields in form data", 'error')
+        return redirect(url_for('new_receipt'))
 
     # Calculate total
-    total = 1+(tax+tip)/100 * subtotal
+    total = subtotal + (tax + tip) / 100 * subtotal
 
-    # Prepare the document
+    # Prepare the document with selected contacts included
     receipt_data = {
         "receipt_name": receipt_name,
         "num_of_people": num_of_people,
+        "selected_contacts": selected_contact_ids,  # Store the IDs of selected contacts
         "total": total,
         "tax": tax,
         "tip": tip,
@@ -312,6 +344,11 @@ def new_receipt():
     # Insert the new receipt into the MongoDB collection
     result = db.receipts.insert_one(receipt_data)
     
+    if result.inserted_id:
+        flash("Receipt created successfully.", 'success')
+    else:
+        flash("Error creating the receipt.", 'error')
+
     return redirect(url_for('receipt_details', receipt_id=str(result.inserted_id)))
 
 
